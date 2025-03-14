@@ -190,6 +190,26 @@ public class RangeTestNew{
 		    }
 		}
 
+	    @Test
+	    public void testGetUpperBound_InvalidStateUsingReflection() throws Exception {
+	        Range range = new Range(5, 10); // Initially valid range
+
+	        // Use reflection to forcibly manipulate private fields
+	        Field lowerField = Range.class.getDeclaredField("lower");
+	        Field upperField = Range.class.getDeclaredField("upper");
+	        lowerField.setAccessible(true);
+	        upperField.setAccessible(true);
+	        lowerField.setDouble(range, 15.0);
+	        upperField.setDouble(range, 10.0); // Now lower > upper (invalid state)
+
+	        try {
+	            range.getUpperBound();
+	            fail("Expected IllegalStateException due to manipulated state."); // Ensure test fails if no exception is thrown
+	        } catch (IllegalStateException e) {
+	            String expectedMessage = "Range is in an invalid state: lower (15.0) > upper (10.0).";
+	            assertEquals(expectedMessage, e.getMessage());
+	        }
+	    }
 		@Test
 		public void testContains_WithReflectionForFullCoverage() throws Exception {
 		    Range range = new Range(5, 10); // valid initial state
