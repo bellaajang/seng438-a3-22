@@ -137,34 +137,29 @@ public class RangeTestNew{
 
 		//Tests for LowerBound
 
-		//declaring and setting up variables
 		private Range finiteRangeLower;
 		private Range infiniteRangeLower;
 		private Range nanRangeLower;
 
 		@Before
 		public void setUpLower() throws Exception {
-			// Creating different range scenarios
 			finiteRangeLower = new Range(-10.0, 15.5); // Finite range
 			infiniteRangeLower = new Range(Double.NEGATIVE_INFINITY, 100.0); // Infinite lower bound
 			nanRangeLower = new Range(Double.NaN, 20.0); // NaN lower bound
 		}
 
-		//Test for checking lowerbound when range has a finite range
 		@Test
 		public void testGetLowerBoundForFiniteValue() {
 			// Lower bound should be -10.0
 			assertEquals(-10.0, finiteRangeLower.getLowerBound(), 0.000000001d);
 		}
 
-		//Test for checking lowerbound when range has a negative infinity 
 		@Test
 		public void testGetLowerBoundForInfiniteValue() {
 			// Lower bound should be NEGATIVE_INFINITY
 			assertEquals(Double.NEGATIVE_INFINITY, infiniteRangeLower.getLowerBound(), 0.0);
 		}
 
-		//Test for checking lowerbound when range has a NaN value
 		@Test
 		public void testGetLowerBoundForNaNValue() {
 			// Lower bound should be NaN
@@ -174,7 +169,6 @@ public class RangeTestNew{
 		public void testGetLowerBound_InvalidStateUsingReflection() throws Exception {
 		    Range range = new Range(5, 10); // Initially valid
 
-		    // Force invalid state using reflection
 		    Field lowerField = Range.class.getDeclaredField("lower");
 		    Field upperField = Range.class.getDeclaredField("upper");
 		    lowerField.setAccessible(true);
@@ -190,26 +184,28 @@ public class RangeTestNew{
 		    }
 		}
 
-	    @Test
-	    public void testGetUpperBound_InvalidStateUsingReflection() throws Exception {
-	        Range range = new Range(5, 10); // Initially valid range
+		@Test
+        public void testGetUpperBound_InvalidStateUsingReflection()
+        		throws Exception {
+            Range range = new Range(5, 10); 
 
-	        // Use reflection to forcibly manipulate private fields
-	        Field lowerField = Range.class.getDeclaredField("lower");
-	        Field upperField = Range.class.getDeclaredField("upper");
-	        lowerField.setAccessible(true);
-	        upperField.setAccessible(true);
-	        lowerField.setDouble(range, 15.0);
-	        upperField.setDouble(range, 10.0); // Now lower > upper (invalid state)
+            Field lowerField = Range.class.getDeclaredField("lower");
+            Field upperField = Range.class.getDeclaredField("upper");
+            lowerField.setAccessible(true);
+            upperField.setAccessible(true);
+            lowerField.setDouble(range, 15.0);
+            upperField.setDouble(range, 10.0); // Now lower > upper
 
-	        try {
-	            range.getUpperBound();
-	            fail("Expected IllegalStateException due to manipulated state."); // Ensure test fails if no exception is thrown
-	        } catch (IllegalStateException e) {
-	            String expectedMessage = "Range is in an invalid state: lower (15.0) > upper (10.0).";
-	            assertEquals(expectedMessage, e.getMessage());
-	        }
-	    }
+            try {
+                range.getUpperBound();
+                fail("Expected IllegalArgumentException due to"
+                		+ "manipulated state.");
+            } catch (IllegalArgumentException e) {
+                assertEquals("Range(double, double): require lower"
+                		+ "(15.0) <= upper (10.0).", e.getMessage());
+            }
+        }
+
 		@Test
 		public void testContains_WithReflectionForFullCoverage() throws Exception {
 		    Range range = new Range(5, 10); // valid initial state
