@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 import org.jfree.data.Range; 
 import org.junit.*;
 
-public class RangeTestModified{
+public class RangeTestNew{
 
 	private Range exampleRange1;
     private Range exampleRange2;
